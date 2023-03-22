@@ -14,12 +14,12 @@ func main() {
 	}
 
 	// Skriver konverterte temperaturer til en ny fil.
-	err = yr.SkrivLinjer(convertedTemperatures, "KONVERTERT kjevik-temp-fahrenheit.txt")
+	err = yr.SkrivLinjer(convertedTemperatures, "KONVERTERT kjevik.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Temperaturer konvertert!")
+	fmt.Println("Suksess! Nå velg convert, average, eller exit.")
 
 	yr.GjsnittTemp()
 }

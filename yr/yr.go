@@ -67,13 +67,13 @@ func CelsiusToFahrenheit(celsius float64) float64 { //funksjon for konvertere gr
 	return conv.CelsiusToFahrenheit(celsius)
 }
 
-func KonverterGrader() ([]string, error) { // funksjon for å åpne og konvertere gradene, og ignorer første linje.
+func KonverterGrader() ([]string, error) {
 	file, err := openFil("kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
 		return nil, err
 	}
-
 	defer lukkFil(file)
+
 	lines, err := lesLinjer(file)
 	if err != nil {
 		return nil, err
@@ -87,21 +87,19 @@ func KonverterGrader() ([]string, error) { // funksjon for å åpne og konverter
 		}
 
 		fields := strings.Split(line, ";")
-		if i == 0 {
-			continue // skip header linja
-		}
 		if len(fields) != 4 {
 			return nil, fmt.Errorf("unexpected number of fields in line %d: %d", i, len(fields))
 		}
 
-		timestamp := fields[0]
+		location := fields[0]
+		timestamp := fields[2]
 		temperatureCelsius, err := strconv.ParseFloat(fields[3], 64)
 		if err != nil {
 			return nil, fmt.Errorf("could not parse temperature in line %d: %s", i, err)
 		}
 		temperatureFahrenheit := temperatureCelsius*(9.0/5.0) + 32.0
 
-		convertedTemperature := fmt.Sprintf("%s;%s;%.2fF", strings.Join(fields[:3], ";"), timestamp, temperatureFahrenheit)
+		convertedTemperature := fmt.Sprintf("%s;%s;%s;%.2fF", location, fields[1], timestamp, temperatureFahrenheit)
 		convertedTemperatures = append(convertedTemperatures, convertedTemperature)
 	}
 
@@ -147,5 +145,5 @@ func GjsnittTemp() {
 	average := sum / float64(count)
 	average = math.Round(average*100) / 100 // runder opp til 2 desimaler
 
-	fmt.Printf("Gjennomsnittlig temperatur i fahrenheit: %.2f°C\n", average)
+	fmt.Printf("Gjennomsnittlig temperatur i celsius: %.2f°C\n", average)
 }
