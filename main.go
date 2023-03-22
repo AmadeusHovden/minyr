@@ -13,11 +13,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Skriver komverterte temperaturer til en ny fil.
+	// Skriver konverterte temperaturer til en ny fil.
 	err = yr.SkrivLinjer(convertedTemperatures, "KONVERTERT kjevik-temp-fahrenheit.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	fmt.Println("Temperaturer konvertert!")
+
+	yr.GjsnittTemp()
 }

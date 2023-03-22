@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"minyr/conv-kopi"
 	"os"
 	"strconv"
@@ -105,4 +106,46 @@ func KonverterGrader() ([]string, error) { // funksjon for å åpne og konverter
 	}
 
 	return convertedTemperatures, nil
+}
+
+func GjsnittTemp() {
+	// funksjon for å regne gj.snitts temp.
+	// åpner kjevik fila
+	file, err := openFil("kjevik-temp-celsius-20220318-20230318.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer lukkFil(file)
+
+	// leser linjene
+	lines, err := lesLinjer(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// kalkulerer
+	var sum float64
+	count := 0
+	for i, line := range lines {
+		if i == 0 {
+			continue // ignorerer første linje
+		}
+		fields := strings.Split(line, ";")
+		if len(fields) != 4 {
+			log.Fatalf("unexpected number of fields in line %d: %d", i, len(fields))
+		}
+		if fields[3] == "" {
+			continue //ignorer linje uten temp field
+		}
+		temperature, err := strconv.ParseFloat(fields[3], 64)
+		if err != nil {
+			log.Fatalf("could not parse temperature in line %d: %s", i, err)
+		}
+		sum += temperature
+		count++
+	}
+	average := sum / float64(count)
+	average = math.Round(average*100) / 100 // runder opp til 2 desimaler
+
+	fmt.Printf("Gjennomsnittlig temperatur i fahrenheit: %.2f°C\n", average)
 }
