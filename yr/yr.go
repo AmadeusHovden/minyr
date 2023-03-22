@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"math"
-	"minyr/conv-kopi"
 	"os"
 	"strconv"
 	"strings"
