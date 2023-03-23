@@ -38,15 +38,15 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-
 			fmt.Println("Konvertering fullført!")
+
 		} else if text == "average" {
 			average, err := yr.GjsnittTemp()
 			if err != nil {
 				log.Fatal(err)
 			}
-
 			fmt.Printf("Gjennomsnittstemperaturen er: %.2f grader Celsius\n", average)
+
 		} else if text == "exit" {
 			break
 		} else {

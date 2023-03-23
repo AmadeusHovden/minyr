@@ -109,6 +109,7 @@ func KonverterGrader() ([]string, error) {
 
 func GjsnittTemp() (float64, error) {
 	// funksjon for å regne gj.snitts temp.
+
 	// åpner kjevik fila
 	file, err := openFil("kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
@@ -122,29 +123,57 @@ func GjsnittTemp() (float64, error) {
 		return 0, err
 	}
 
-	// kalkulerer
-	var sum float64
+	// kalkulerer var
+	sumCelsius := 0.0
+	sumFahrenheit := 0.0
 	count := 0
+
 	for i, line := range lines {
 		if i == 0 {
 			continue // ignorerer første linje
 		}
+
 		fields := strings.Split(line, ";")
 		if len(fields) != 4 {
 			return 0, fmt.Errorf("unexpected number of fields in line %d: %d", i, len(fields))
 		}
+
 		if fields[3] == "" {
 			continue //ignorer linje uten temp field
 		}
-		temperature, err := strconv.ParseFloat(fields[3], 64)
+
+		temperatureCelsius, err := strconv.ParseFloat(fields[3], 64)
 		if err != nil {
 			return 0, fmt.Errorf("could not parse temperature in line %d: %s", i, err)
 		}
-		sum += temperature
+
+		temperatureFahrenheit := CelsiusToFahrenheit(temperatureCelsius)
+
+		sumCelsius += temperatureCelsius
+		sumFahrenheit += temperatureFahrenheit
+
 		count++
 	}
-	average := sum / float64(count)
-	average = math.Round(average*100) / 100 // runder opp til 2 desimaler
 
-	return average, nil
+	averageCelsius := sumCelsius / float64(count)
+	averageFahrenheit := sumFahrenheit / float64(count)
+
+	averageCelsius = math.Round(averageCelsius*100) / 100       // runder opp til 2 desimaler
+	averageFahrenheit = math.Round(averageFahrenheit*100) / 100 // runder opp til 2 desimaler
+
+	fmt.Println("Vil du ha gjennomsnittstemperaturen i Celsius eller Fahrenheit? Skriv 'c' for Celsius og 'f' for Fahrenheit.")
+
+	var valg string
+
+	fmt.Scanln(&valg)
+
+	if valg == "c" {
+		fmt.Println("Gjennomsnittstemperaturen er:", averageCelsius, "grader Celsius")
+		return averageCelsius, nil
+	} else if valg == "f" {
+		fmt.Println("Gjennomsnittstemperaturen er:", averageFahrenheit, "grader Fahrenheit")
+		return averageFahrenheit, nil
+	} else {
+		return 0, fmt.Errorf("Ugyldig valg. Vennligst skriv 'c' eller 'f'.")
+	}
 }
