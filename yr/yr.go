@@ -8,6 +8,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/AmadeusHovden/funtemps/conv"
 	//"io"
 )
 
@@ -105,19 +107,19 @@ func KonverterGrader() ([]string, error) {
 	return convertedTemperatures, nil
 }
 
-func GjsnittTemp() {
+func GjsnittTemp() (float64, error) {
 	// funksjon for å regne gj.snitts temp.
 	// åpner kjevik fila
 	file, err := openFil("kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 	defer lukkFil(file)
 
 	// leser linjene
 	lines, err := lesLinjer(file)
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 
 	// kalkulerer
@@ -129,14 +131,14 @@ func GjsnittTemp() {
 		}
 		fields := strings.Split(line, ";")
 		if len(fields) != 4 {
-			log.Fatalf("unexpected number of fields in line %d: %d", i, len(fields))
+			return 0, fmt.Errorf("unexpected number of fields in line %d: %d", i, len(fields))
 		}
 		if fields[3] == "" {
 			continue //ignorer linje uten temp field
 		}
 		temperature, err := strconv.ParseFloat(fields[3], 64)
 		if err != nil {
-			log.Fatalf("could not parse temperature in line %d: %s", i, err)
+			return 0, fmt.Errorf("could not parse temperature in line %d: %s", i, err)
 		}
 		sum += temperature
 		count++
@@ -144,5 +146,5 @@ func GjsnittTemp() {
 	average := sum / float64(count)
 	average = math.Round(average*100) / 100 // runder opp til 2 desimaler
 
-	fmt.Printf("Gjennomsnittlig temperatur i celsius: %.2f°C\n", average)
+	return average, nil
 }
