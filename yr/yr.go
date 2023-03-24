@@ -100,7 +100,7 @@ func KonverterGrader() ([]string, error) { // konevrterer gardene i kjevik fila 
 
 		temperatureFahrenheit := CelsiusToFahrenheit(temperatureCelsius) //bruker funksjonen fra funtemps
 
-		convertedTemperature := fmt.Sprintf("%s;%s;%s;%.2fF", location, fields[1], timestamp, temperatureFahrenheit)
+		convertedTemperature := fmt.Sprintf("%s;%s;%s;%.1f°F", location, fields[1], timestamp, temperatureFahrenheit)
 		convertedTemperatures = append(convertedTemperatures, convertedTemperature)
 	}
 
@@ -168,10 +168,10 @@ func GjsnittTemp() (float64, error) {
 	fmt.Scanln(&valg) //gir valget mellom celsius og fahrenheit, annet er "ugyldig"
 
 	if valg == "c" {
-		fmt.Println("Gjennomsnittstemperaturen er:", averageCelsius, "grader Celsius")
+		fmt.Println("Gjennomsnittstemperaturen er:", averageCelsius, "° Celsius")
 		return averageCelsius, nil
 	} else if valg == "f" {
-		fmt.Println("Gjennomsnittstemperaturen er:", averageFahrenheit, "grader Fahrenheit")
+		fmt.Println("Gjennomsnittstemperaturen er:", averageFahrenheit, "° Fahrenheit")
 		return averageFahrenheit, nil
 	} else {
 		return 0, fmt.Errorf("ugyldig valg. Vennligst skriv 'c' eller 'f'")
