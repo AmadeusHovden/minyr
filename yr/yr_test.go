@@ -55,6 +55,10 @@ func TestTellLinjer(t *testing.T) {
 }
 */
 
+func TestKonv(t *testing.T) {
+
+}
+
 func TestCelsiusGjennomsnitt(t *testing.T) {
 	want := 8.56
 	got, err := yr.CelsiusGjennomsnitt()
