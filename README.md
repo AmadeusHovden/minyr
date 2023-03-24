@@ -1,9 +1,9 @@
 ### MINYR
-## må gjøres:
 
-# Lærer må kunne klone repositorien, kompilere 'main.go' filen med kommandoen 'go build' og utføre programmet med kommandoen 'minyr' som gir disse tre valgene: convert, average, exit. Lærer skal bruke en Linux terminal for å evaluere besvarelsen.??
+### ordne "minyr" i terminalen skrive "echo $PATH" så sudo cp minyr /usr/local/bin. da skal minyr fungere for å kjøre programmet.
 
-# Alt arbeid skal gjennomføres i instansen av Linux operativsystemet (Ubuntu) i en Docker kontainer, som ble installert og konfigurert på Seminar II  (unntaket er hvis studenten har Linux OS installert direkte på datamaskinen, dvs. som vertssystem).
+### docker. åpne og runne conatiner "minyr" så skrive "docker exec -it minyr /bin/bash". Logge inn på bruker ved su - ammty så kan man kjøre greiene og programmet som vanlig. (må pulle, hvis nye endringer).
+
 
 
 
