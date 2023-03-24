@@ -17,7 +17,7 @@ func TestTellLinjer(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		file, err := os.Open("../kjevik-temp-celsius-20220318-20230318.csv")
+		file, err := os.Open("kjevik-temp-celsius-20220318-20230318.csv")
 		if err != nil {
 			t.Errorf("could not open file %s: %v", tc.filename, err)
 			continue

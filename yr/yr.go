@@ -111,7 +111,7 @@ func CelsiusGjennomsnitt() (float64, error) { //funksjon for gj.snitt i celsius
 	// funksjon for å regne gj.snitts temp.
 
 	// åpner kjevik fila
-	file, err := openFil("../kjevik-temp-celsius-20220318-20230318.csv")
+	file, err := openFil("kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
 		return 0, err
 	}

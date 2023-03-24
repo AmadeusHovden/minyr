@@ -17,7 +17,7 @@ func main() { // main funksjon som kjører og gir valg om: convert, average elle
 		text := strings.TrimSpace(scanner.Text()) //bruker får valg
 
 		if text == "convert" { //convert valg, lager ny fil kalt KONV.csv
-			_, err := os.Stat("KONV.csv")
+			_, err := os.Stat("kjevik-temp-fahr-20220318-20230318.csv")
 			if err == nil {
 				fmt.Print("Filen eksisterer allerede. Vil du generere filen på nytt? (j/n): ") //filen eksisterer, skal det konverteres igjen?
 				scanner.Scan()
@@ -34,7 +34,7 @@ func main() { // main funksjon som kjører og gir valg om: convert, average elle
 				log.Fatal(err)
 			}
 
-			err = yr.SkrivLinjer(convertedTemperatures, "KONV.csv") //skriver linjer i ny fil.
+			err = yr.SkrivLinjer(convertedTemperatures, "kjevik-temp-fahr-20220318-20230318.csv") //skriver linjer i ny fil.
 			if err != nil {
 				log.Fatal(err)
 			}
