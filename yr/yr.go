@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/AmadeusHovden/funtemps/conv"
-	//"io"
 )
 
 func openFil(filename string) (*os.File, error) { // funksjon for å åpne fil
@@ -55,7 +54,7 @@ func SkrivLinjer(lines []string, filename string) error { //funksjon for å skri
 	defer writer.Flush()
 
 	fmt.Fprint(writer, "Navn;Stasjon;Tid(norsk normaltid);Lufttemperatur") //skriver i første linje
-	fmt.Fprintln(writer, "")                                               //setter det etter på neste linje.
+	fmt.Fprintln(writer, "")                                               //lager linjeskift mellom setningen over^ og første kjevik linje.
 
 	for _, line := range lines {
 		fmt.Fprintln(writer, line)
@@ -68,7 +67,7 @@ func CelsiusToFahrenheit(celsius float64) float64 { //funksjon for konvertere gr
 	return conv.CelsiusToFahrenheit(celsius)
 }
 
-func KonverterGrader() ([]string, error) { // konevrterer gardene i kjevik fila
+func KonverterGrader() ([]string, error) { // konevrterer gardene i kjevik fila til fahrenheit
 	file, err := openFil("kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
 		return nil, err
@@ -99,7 +98,7 @@ func KonverterGrader() ([]string, error) { // konevrterer gardene i kjevik fila
 			return nil, fmt.Errorf("could not parse temperature in line %d: %s", i, err)
 		}
 
-		temperatureFahrenheit := CelsiusToFahrenheit(temperatureCelsius)
+		temperatureFahrenheit := CelsiusToFahrenheit(temperatureCelsius) //bruker funksjonen fra funtemps
 
 		convertedTemperature := fmt.Sprintf("%s;%s;%s;%.2fF", location, fields[1], timestamp, temperatureFahrenheit)
 		convertedTemperatures = append(convertedTemperatures, convertedTemperature)

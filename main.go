@@ -9,17 +9,17 @@ import (
 	"strings"
 )
 
-func main() {
+func main() { // main funksjon som kjører og gir valg om: convert, average eller exit.
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Velg convert, average, eller exit: ")
 		scanner.Scan()
-		text := strings.TrimSpace(scanner.Text())
+		text := strings.TrimSpace(scanner.Text()) //bruker får valg
 
-		if text == "convert" {
+		if text == "convert" { //convert valg, lager ny fil kalt KONV.csv
 			_, err := os.Stat("KONV.csv")
 			if err == nil {
-				fmt.Print("Filen eksisterer allerede. Vil du generere filen på nytt? (j/n): ")
+				fmt.Print("Filen eksisterer allerede. Vil du generere filen på nytt? (j/n): ") //filen eksisterer, skal det konverteres igjen?
 				scanner.Scan()
 				answer := strings.ToLower(scanner.Text())
 				if answer != "j" && answer != "n" {
@@ -29,25 +29,25 @@ func main() {
 				}
 			}
 
-			convertedTemperatures, err := yr.KonverterGrader()
+			convertedTemperatures, err := yr.KonverterGrader() //kjører KonverterGrader funksjon fra yr.go
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			err = yr.SkrivLinjer(convertedTemperatures, "KONV.csv")
+			err = yr.SkrivLinjer(convertedTemperatures, "KONV.csv") //skriver linjer i ny fil.
 			if err != nil {
 				log.Fatal(err)
 			}
 			fmt.Println("Konvertering fullført!")
 
-		} else if text == "average" {
+		} else if text == "average" { //kjører GjsnittTemp funkjson
 			average, err := yr.GjsnittTemp()
 			if err != nil {
 				log.Fatal(err)
 			}
 			fmt.Printf("Gjennomsnittstemperaturen er: %.2f grader Celsius\n", average)
 
-		} else if text == "exit" {
+		} else if text == "exit" { //avslutter og går ut av programmet.
 			break
 		} else {
 			fmt.Println("Ugyldig kommando!")
