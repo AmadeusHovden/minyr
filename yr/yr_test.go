@@ -13,7 +13,7 @@ func TestTellLinjer(t *testing.T) {
 		want     int
 	}
 	tests := []test{
-		{filename: "kjevik-temp-celsius-20220318-20230318.csv", want: 16756},
+		{filename: "kjevik-temp-celsius-20220318-20230318.csv", want: 16756}, //funket
 	}
 
 	for _, tc := range tests {
@@ -36,30 +36,35 @@ func TestTellLinjer(t *testing.T) {
 	}
 }
 
-/* func TestKonverterGrader(t *testing.T) {
+func TestKonverterGrader(t *testing.T) {
 	type test struct {
 		input string
 		want  string
 	}
 
 	tests := []test{
-		{input: "Kjevik;SN39040;18.03.2022 01:50;6", want: "Kjevik;SN39040;18.03.2022 01:50;42.8"},
+		{input: "Kjevik;SN39040;18.03.2022 01:50;6", want: "Kjevik;SN39040;18.03.2022 01:50;42.8°F"}, //funket
+		{input: "Kjevik;SN39040;18.03.2022 01:50;0", want: "Kjevik;SN39040;18.03.2022 01:50;32.0°F"},
+		{input: "Kjevik;SN39040;18.03.2022 01:50;-11", want: "Kjevik;SN39040;18.03.2022 01:50;12.2°F"},
+		{input: "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);;;", want: "Data er basert på gyldig data (per 18.03.2023) (CC BY 4.0) fra Meteorologisk institutt (MET);endringen er gjort av Amadeus Hovden"},
+	}
+	got, err := yr.KonverterGrader()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
 	}
 
-	for _, tc := range tests {
-		got := yr.KonverterGrader(tc.input)
-		if !reflect.DeepEqual(tc.want, got[0]) {
-			t.Errorf("expected: %v, got: %v", tc.want, got[0])
+	for i, tt := range tests {
+		if i >= len(got) {
+			t.Fatalf("not enough converted temperatures, got %d, want at least %d", len(got), i+1)
+		}
+
+		if got[i] != tt.want {
+			t.Errorf("unexpected result for test %d:\ngot  %q\nwant %q", i+1, got[i], tt.want)
 		}
 	}
 }
-*/
 
-func TestKonv(t *testing.T) {
-
-}
-
-func TestCelsiusGjennomsnitt(t *testing.T) {
+func TestCelsiusGjennomsnitt(t *testing.T) { //funket
 	want := 8.56
 	got, err := yr.CelsiusGjennomsnitt()
 	if err != nil {
