@@ -50,7 +50,7 @@ func SkrivLinjer(lines []string, filename string) error { //funksjon for å skri
 	}
 	defer lukkFil(file)
 
-	writer := bufio.NewWriter(file)
+	writer := bufio.NewWriterSize(file, 4096) // bruker en buffer med størrelse 4096 bytes.
 	defer writer.Flush()
 
 	fmt.Fprint(writer, "Navn;Stasjon;Tid(norsk normaltid);Lufttemperatur") //skriver i første linje
