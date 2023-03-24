@@ -68,7 +68,7 @@ func CelsiusToFahrenheit(celsius float64) float64 { //funksjon for konvertere gr
 	return conv.CelsiusToFahrenheit(celsius)
 }
 
-func KonverterGrader() ([]string, error) {
+func KonverterGrader() ([]string, error) { // konevrterer gardene i kjevik fila
 	file, err := openFil("kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
 		return nil, err
@@ -98,7 +98,8 @@ func KonverterGrader() ([]string, error) {
 		if err != nil {
 			return nil, fmt.Errorf("could not parse temperature in line %d: %s", i, err)
 		}
-		temperatureFahrenheit := temperatureCelsius*(9.0/5.0) + 32.0
+
+		temperatureFahrenheit := CelsiusToFahrenheit(temperatureCelsius)
 
 		convertedTemperature := fmt.Sprintf("%s;%s;%s;%.2fF", location, fields[1], timestamp, temperatureFahrenheit)
 		convertedTemperatures = append(convertedTemperatures, convertedTemperature)
@@ -147,7 +148,7 @@ func GjsnittTemp() (float64, error) {
 			return 0, fmt.Errorf("could not parse temperature in line %d: %s", i, err)
 		}
 
-		temperatureFahrenheit := CelsiusToFahrenheit(temperatureCelsius)
+		temperatureFahrenheit := CelsiusToFahrenheit(temperatureCelsius) //bruker funkjson fra funtemps
 
 		sumCelsius += temperatureCelsius
 		sumFahrenheit += temperatureFahrenheit
@@ -165,7 +166,7 @@ func GjsnittTemp() (float64, error) {
 
 	var valg string
 
-	fmt.Scanln(&valg)
+	fmt.Scanln(&valg) //gir valget mellom celsius og fahrenheit, annet er "ugyldig"
 
 	if valg == "c" {
 		fmt.Println("Gjennomsnittstemperaturen er:", averageCelsius, "grader Celsius")
