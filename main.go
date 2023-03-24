@@ -41,11 +41,10 @@ func main() { // main funksjon som kjører og gir valg om: convert, average elle
 			fmt.Println("Konvertering fullført!")
 
 		} else if text == "average" { //kjører GjsnittTemp funkjson
-			average, err := yr.GjsnittTemp()
+			_, err := yr.GjsnittTemp()
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Printf("Gjennomsnittstemperaturen er: %.2f grader Celsius\n", average)
 
 		} else if text == "exit" { //avslutter og går ut av programmet.
 			break
