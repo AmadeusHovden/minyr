@@ -174,6 +174,6 @@ func GjsnittTemp() (float64, error) {
 		fmt.Println("Gjennomsnittstemperaturen er:", averageFahrenheit, "grader Fahrenheit")
 		return averageFahrenheit, nil
 	} else {
-		return 0, fmt.Errorf("Ugyldig valg. Vennligst skriv 'c' eller 'f'.")
+		return 0, fmt.Errorf("ugyldig valg. Vennligst skriv 'c' eller 'f'")
 	}
 }
