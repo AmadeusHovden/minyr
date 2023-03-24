@@ -41,11 +41,22 @@ func main() { // main funksjon som kjører og gir valg om: convert, average elle
 			fmt.Println("Konvertering fullført!")
 
 		} else if text == "average" { //kjører GjsnittTemp funkjson
-			_, err := yr.GjsnittTemp()
-			if err != nil {
-				log.Fatal(err)
+			fmt.Print("Velg 'c' for celsius og 'f' for fahrenheit (c/f): ")
+			scanner.Scan()
+			tempType := strings.TrimSpace(scanner.Text())
+			if tempType == "c" {
+				_, err := yr.CelsiusGjennomsnitt()
+				if err != nil {
+					log.Fatal(err)
+				}
+			} else if tempType == "f" {
+				_, err := yr.FahrenheitGjennomsnitt()
+				if err != nil {
+					log.Fatal(err)
+				}
+			} else {
+				fmt.Println("Ugyldig kommando!")
 			}
-
 		} else if text == "exit" { //avslutter og går ut av programmet.
 			break
 		} else {

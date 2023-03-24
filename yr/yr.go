@@ -107,7 +107,7 @@ func KonverterGrader() ([]string, error) { // konevrterer gardene i kjevik fila 
 	return convertedTemperatures, nil
 }
 
-func GjsnittTemp() (float64, error) {
+func CelsiusGjennomsnitt() (float64, error) { //funksjon for gj.snitt i celsius
 	// funksjon for å regne gj.snitts temp.
 
 	// åpner kjevik fila
@@ -125,6 +125,58 @@ func GjsnittTemp() (float64, error) {
 
 	// kalkulerer var
 	sumCelsius := 0.0
+	count := 0
+
+	for i, line := range lines {
+		if i == 0 {
+			continue // ignorerer første linje
+		}
+
+		fields := strings.Split(line, ";")
+		if len(fields) != 4 {
+			return 0, fmt.Errorf("unexpected number of fields in line %d: %d", i, len(fields))
+		}
+
+		if fields[3] == "" {
+			continue //ignorer linje uten temp field
+		}
+
+		temperatureCelsius, err := strconv.ParseFloat(fields[3], 64)
+		if err != nil {
+			return 0, fmt.Errorf("could not parse temperature in line %d: %s", i, err)
+		}
+
+		sumCelsius += temperatureCelsius
+
+		count++
+	}
+
+	averageCelsius := sumCelsius / float64(count)
+
+	averageCelsius = math.Round(averageCelsius*100) / 100 // runder opp til 2 desimaler
+
+	fmt.Println("Gjennomsnittstemperaturen er:", averageCelsius, "°Celsius")
+
+	return averageCelsius, nil
+}
+
+func FahrenheitGjennomsnitt() (float64, error) { // funksjon for gj.snitt i fahrenheit
+	// funksjon for å regne gj.snitts temp.
+
+	// åpner kjevik fila
+	file, err := openFil("kjevik-temp-celsius-20220318-20230318.csv")
+	if err != nil {
+		return 0, err
+	}
+	defer lukkFil(file)
+
+	// leser linjene
+	lines, err := lesLinjer(file)
+	if err != nil {
+		return 0, err
+	}
+
+	// kalkulerer var
 	sumFahrenheit := 0.0
 	count := 0
 
@@ -149,31 +201,16 @@ func GjsnittTemp() (float64, error) {
 
 		temperatureFahrenheit := CelsiusToFahrenheit(temperatureCelsius) //bruker funkjson fra funtemps
 
-		sumCelsius += temperatureCelsius
 		sumFahrenheit += temperatureFahrenheit
 
 		count++
 	}
 
-	averageCelsius := sumCelsius / float64(count)
 	averageFahrenheit := sumFahrenheit / float64(count)
 
-	averageCelsius = math.Round(averageCelsius*100) / 100       // runder opp til 2 desimaler
 	averageFahrenheit = math.Round(averageFahrenheit*100) / 100 // runder opp til 2 desimaler
 
-	fmt.Println("Vil du ha gjennomsnittstemperaturen i Celsius eller Fahrenheit? Skriv 'c' for Celsius og 'f' for Fahrenheit.")
+	fmt.Println("Gjennomsnittstemperaturen er:", averageFahrenheit, "°Fahrenheit")
 
-	var valg string
-
-	fmt.Scanln(&valg) //gir valget mellom celsius og fahrenheit, annet er "ugyldig"
-
-	if valg == "c" {
-		fmt.Println("Gjennomsnittstemperaturen er:", averageCelsius, "° Celsius")
-		return averageCelsius, nil
-	} else if valg == "f" {
-		fmt.Println("Gjennomsnittstemperaturen er:", averageFahrenheit, "° Fahrenheit")
-		return averageFahrenheit, nil
-	} else {
-		return 0, fmt.Errorf("ugyldig valg. Vennligst skriv 'c' eller 'f'")
-	}
+	return averageFahrenheit, nil
 }
