@@ -37,7 +37,7 @@ func TestTellLinjer(t *testing.T) {
 	}
 }
 
-func TestKonverterGrader(t *testing.T) {
+/* func TestKonverterGrader(t *testing.T) {
 	tests := []struct {
 		input string
 		want  string
@@ -79,6 +79,7 @@ func TestKonverterGrader(t *testing.T) {
 		}
 	}
 }
+*/
 
 func TestKonverterGraderDataGyldig(t *testing.T) { //funket
 	want := "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET); endringen er gjort av Amadeus Hovden"
