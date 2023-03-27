@@ -12,7 +12,7 @@ import (
 	"github.com/AmadeusHovden/funtemps/conv"
 )
 
-func openFil(filename string) (*os.File, error) { // funksjon for å åpne fil
+func OpenFil(filename string) (*os.File, error) { // funksjon for å åpne fil
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err
@@ -20,14 +20,11 @@ func openFil(filename string) (*os.File, error) { // funksjon for å åpne fil
 	return file, nil
 }
 
-func lesLinjer(file *os.File) ([]string, error) { // funksjon for å lese fil
+func LesLinjer(file *os.File) ([]string, error) { // funksjon for å lese fil
 	var lines []string
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.HasPrefix(line, "Navn") || strings.HasPrefix(line, "Data") {
-			continue // returnerer alle linjer utenom de som starter på navn og data.
-		}
 		lines = append(lines, line)
 	}
 	if err := scanner.Err(); err != nil {
@@ -36,7 +33,7 @@ func lesLinjer(file *os.File) ([]string, error) { // funksjon for å lese fil
 	return lines, nil
 }
 
-func lukkFil(file *os.File) { //funksjon for å lukke fila.
+func LukkFil(file *os.File) { // funksjon for å lukke fil
 	err := file.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -48,18 +45,34 @@ func SkrivLinjer(lines []string, filename string) error { //funksjon for å skri
 	if err != nil {
 		return err
 	}
-	defer lukkFil(file)
+	defer LukkFil(file)
 
 	writer := bufio.NewWriterSize(file, 4096) // bruker en buffer med størrelse 4096 bytes.
 	defer writer.Flush()
 
-	fmt.Fprint(writer, "Navn;Stasjon;Tid(norsk normaltid);Lufttemperatur") //skriver i første linje
-	fmt.Fprintln(writer, "")                                               //lager linjeskift mellom setningen over^ og første kjevik linje.
+	fmt.Fprintln(writer, lines[0])
 
-	for _, line := range lines {
-		fmt.Fprintln(writer, line)
+	for _, line := range lines[1 : len(lines)-1] {
+		fields := strings.Split(line, ";")
+		if len(fields) != 4 {
+			return fmt.Errorf("unexpected number of fields in line: %s", line)
+		}
+
+		location := fields[0]
+		station := fields[1]
+		timestamp := fields[2]
+		temperatureCelsius, err := strconv.ParseFloat(fields[3], 64)
+		if err != nil {
+			return fmt.Errorf("could not parse temperature in line: %s", line)
+		}
+
+		temperatureFahrenheit := CelsiusToFahrenheit(temperatureCelsius)
+
+		convertedTemperature := fmt.Sprintf("%s;%s;%s;%.1f°F", location, station, timestamp, temperatureFahrenheit)
+		fmt.Fprintln(writer, convertedTemperature)
 	}
-	fmt.Fprint(writer, "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);endringen er gjort av Amadeus Hovden")
+
+	fmt.Fprintln(writer, "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET); endringen er gjort av Amadeus Hovden")
 	return nil
 }
 
@@ -68,57 +81,37 @@ func CelsiusToFahrenheit(celsius float64) float64 { //funksjon for konvertere gr
 }
 
 func KonverterGrader() ([]string, error) { // konevrterer gardene i kjevik fila til fahrenheit
-	file, err := openFil("kjevik-temp-celsius-20220318-20230318.csv")
+	file, err := OpenFil("kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
 		return nil, err
 	}
-	defer lukkFil(file)
+	defer LukkFil(file)
 
-	lines, err := lesLinjer(file)
+	lines, err := LesLinjer(file)
 	if err != nil {
 		return nil, err
 	}
 
-	convertedTemperatures := make([]string, 0, len(lines)-1) // ikke ta med header linja
-
-	for i, line := range lines {
-		if i == 0 {
-			continue // ignorer header linja
-		}
-
-		fields := strings.Split(line, ";")
-		if len(fields) != 4 {
-			return nil, fmt.Errorf("unexpected number of fields in line %d: %d", i, len(fields))
-		}
-
-		location := fields[0]
-		timestamp := fields[2]
-		temperatureCelsius, err := strconv.ParseFloat(fields[3], 64)
-		if err != nil {
-			return nil, fmt.Errorf("could not parse temperature in line %d: %s", i, err)
-		}
-
-		temperatureFahrenheit := CelsiusToFahrenheit(temperatureCelsius) //bruker funksjonen fra funtemps
-
-		convertedTemperature := fmt.Sprintf("%s;%s;%s;%.1f°F", location, fields[1], timestamp, temperatureFahrenheit)
-		convertedTemperatures = append(convertedTemperatures, convertedTemperature)
+	err = SkrivLinjer(lines, "kjevik-temp-fahr-20220318-20230318.csv")
+	if err != nil {
+		return nil, err
 	}
 
-	return convertedTemperatures, nil
+	return lines, nil
 }
 
 func CelsiusGjennomsnitt() (float64, error) { //funksjon for gj.snitt i celsius
 	// funksjon for å regne gj.snitts temp.
 
 	// åpner kjevik fila
-	file, err := openFil("kjevik-temp-celsius-20220318-20230318.csv")
+	file, err := OpenFil("kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
 		return 0, err
 	}
-	defer lukkFil(file)
+	defer LukkFil(file)
 
 	// leser linjene
-	lines, err := lesLinjer(file)
+	lines, err := LesLinjer(file)
 	if err != nil {
 		return 0, err
 	}
@@ -164,14 +157,14 @@ func FahrenheitGjennomsnitt() (float64, error) { // funksjon for gj.snitt i fahr
 	// funksjon for å regne gj.snitts temp.
 
 	// åpner kjevik fila
-	file, err := openFil("kjevik-temp-celsius-20220318-20230318.csv")
+	file, err := OpenFil("kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
 		return 0, err
 	}
-	defer lukkFil(file)
+	defer LukkFil(file)
 
 	// leser linjene
-	lines, err := lesLinjer(file)
+	lines, err := LesLinjer(file)
 	if err != nil {
 		return 0, err
 	}

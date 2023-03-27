@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"minyr/yr"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -37,30 +38,68 @@ func TestTellLinjer(t *testing.T) {
 }
 
 func TestKonverterGrader(t *testing.T) {
-	type test struct {
+	tests := []struct {
 		input string
 		want  string
-	}
-
-	tests := []test{
-		{input: "Kjevik;SN39040;18.03.2022 01:50;6", want: "Kjevik;SN39040;18.03.2022 01:50;42.8°F"}, //funket
+	}{
+		{input: "Kjevik;SN39040;18.03.2022 01:50;6", want: "Kjevik;SN39040;18.03.2022 01:50;42.8°F"},
 		{input: "Kjevik;SN39040;18.03.2022 01:50;0", want: "Kjevik;SN39040;18.03.2022 01:50;32.0°F"},
 		{input: "Kjevik;SN39040;18.03.2022 01:50;-11", want: "Kjevik;SN39040;18.03.2022 01:50;12.2°F"},
-		{input: "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);;;", want: "Data er basert på gyldig data (per 18.03.2023) (CC BY 4.0) fra Meteorologisk institutt (MET);endringen er gjort av Amadeus Hovden"},
 	}
-	got, err := yr.KonverterGrader()
+
+	_, err := yr.KonverterGrader()
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	for i, tt := range tests {
-		if i >= len(got) {
-			t.Fatalf("not enough converted temperatures, got %d, want at least %d", len(got), i+1)
-		}
+	file, err := yr.OpenFil("kjevik-temp-celsius-20220318-20230318.csv")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	defer yr.LukkFil(file)
 
-		if got[i] != tt.want {
-			t.Errorf("unexpected result for test %d:\ngot  %q\nwant %q", i+1, got[i], tt.want)
+	lines, err := yr.LesLinjer(file)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	for _, tt := range tests {
+		var found bool
+		for _, line := range lines {
+			if strings.Contains(line, tt.input) {
+				found = true
+				if !strings.Contains(line, tt.want) {
+					t.Errorf("test failed: want %q, got %q", tt.want, line)
+				}
+				break
+			}
 		}
+		if !found {
+			t.Errorf("test failed: input %q not found in file", tt.input)
+		}
+	}
+}
+
+func TestKonverterGraderDataGyldig(t *testing.T) { //funket
+	want := "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET); endringen er gjort av Amadeus Hovden"
+	_, err := yr.KonverterGrader()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	file, err := yr.OpenFil("kjevik-temp-fahr-20220318-20230318.csv")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	defer yr.LukkFil(file)
+
+	lines, err := yr.LesLinjer(file)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !strings.Contains(lines[len(lines)-1], want) {
+		t.Errorf("test failed: want %q, got %q", want, lines[len(lines)-1])
 	}
 }
 
