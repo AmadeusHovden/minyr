@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"minyr/yr"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -37,8 +38,8 @@ func TestTellLinjer(t *testing.T) {
 	}
 }
 
-/* func TestKonverterGrader(t *testing.T) {
-	tests := []struct {
+func TestCelsiusToFahrenheit(t *testing.T) { //funket
+	testCases := []struct {
 		input string
 		want  string
 	}{
@@ -47,39 +48,23 @@ func TestTellLinjer(t *testing.T) {
 		{input: "Kjevik;SN39040;18.03.2022 01:50;-11", want: "Kjevik;SN39040;18.03.2022 01:50;12.2°F"},
 	}
 
-	_, err := yr.KonverterGrader()
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	file, err := yr.OpenFil("kjevik-temp-celsius-20220318-20230318.csv")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	defer yr.LukkFil(file)
-
-	lines, err := yr.LesLinjer(file)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	for _, tt := range tests {
-		var found bool
-		for _, line := range lines {
-			if strings.Contains(line, tt.input) {
-				found = true
-				if !strings.Contains(line, tt.want) {
-					t.Errorf("test failed: want %q, got %q", tt.want, line)
-				}
-				break
-			}
+	for _, tc := range testCases {
+		fields := strings.Split(tc.input, ";")
+		temp, err := strconv.ParseFloat(fields[3], 64)
+		if err != nil {
+			t.Errorf("Failed to convert temperature value to float64: %v", err)
 		}
-		if !found {
-			t.Errorf("test failed: input %q not found in file", tt.input)
+		fahrenheit := yr.CelsiusToFahrenheit(temp)
+		wantFields := strings.Split(tc.want, ";")
+		wantTemp, err := strconv.ParseFloat(strings.TrimRight(wantFields[3], "°F"), 64)
+		if err != nil {
+			t.Errorf("Failed to convert wanted temperature value to float64: %v", err)
+		}
+		if fahrenheit != wantTemp {
+			t.Errorf("CelsiusToFahrenheit(%v) = %v; want %v", temp, fahrenheit, wantTemp)
 		}
 	}
 }
-*/
 
 func TestKonverterGraderDataGyldig(t *testing.T) { //funket
 	want := "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET); endringen er gjort av Amadeus Hovden"
